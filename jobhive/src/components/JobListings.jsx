@@ -2,9 +2,11 @@ import React from 'react'
 import jobsData from '../jobs.json'
 import JobList from './JobList';
 
+
 function JobListings() {
     const {jobs} = jobsData;
     const recentJobs = jobs.slice(1,3);
+     
   
   
   return (
