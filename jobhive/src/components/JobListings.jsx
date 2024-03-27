@@ -17,13 +17,8 @@ function JobListings() {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {recentJobs.map((job) => (
-            <JobList key={job.id} job={job} />
-            
+          <JobList key={job.id} job={job} /> 
         ))}
-        
-        
-        
-        
       </div>
     </div>
   </section>
