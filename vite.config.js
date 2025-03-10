@@ -14,8 +14,15 @@ export default defineConfig({
     },
   },
   build: {
+    outDir: 'dist', // ✅ Ensures Netlify finds the build
     rollupOptions: {
-      external: ['react-router-dom'], // Mark react-router-dom as external
+      external: [], // ✅ Remove react-router-dom from external to avoid errors
     },
   },
+  resolve: {
+    alias: {
+      "react-router-dom": "/node_modules/react-router-dom" // ✅ Ensures correct path resolution
+    }
+  },
+  base: '/', // ✅ Important for Netlify routing
 });
