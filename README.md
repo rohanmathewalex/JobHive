@@ -1,14 +1,8 @@
-# JobHive
+# React + Vite
 
-JobHive is a React. js-based web application that simplifies job management by allowing users to add, edit, and delete job listings, leveraging technologies such as React Router, Data Loader, useEffect() and Tailwind CSS to deliver a seamless user experience with responsive design and intuitive navigation.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Installation
+Currently, two official plugins are available:
 
-Follow these steps to run JobHive locally:
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/jobhive.git
-2. run npm init
-3. run npm run server -> to run the server
-4. npm start to fire up the UI
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
