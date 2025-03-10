@@ -11,14 +11,21 @@ const JobPage = ({ deleteJob }) => {
 
     useEffect(() => {
         let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
-        const foundJob = jobs.find((j) => j.id === id);
-        if (!foundJob) {
-            toast.error("Job not found!");
-            navigate("/jobs");
+
+        if (!jobs.length) {
+            fetch("/jobs.json")
+                .then((res) => res.json())
+                .then((data) => {
+                    localStorage.setItem("jobs", JSON.stringify(data.jobs));
+                    const foundJob = data.jobs.find((j) => j.id === id);
+                    setJob(foundJob);
+                })
+                .catch(() => toast.error("Failed to load job data"));
         } else {
+            const foundJob = jobs.find((j) => j.id === id);
             setJob(foundJob);
         }
-    }, [id, navigate]);
+    }, [id]);
 
     const onDeleteClick = () => {
         const confirm = window.confirm("Are you sure you want to delete this listing?");
@@ -32,34 +39,88 @@ const JobPage = ({ deleteJob }) => {
         navigate("/jobs");
     };
 
-    if (!job) return <p>Loading...</p>;
-
-    return (
-        <section>
-            <h1>{job.title}</h1>
-            <p>{job.location}</p>
-            <p>{job.salary}</p>
-            <button onClick={onDeleteClick}>Delete Job</button>
-        </section>
-    );
-};
-
-// ✅ Correct export for `jobLoader`
-export const jobLoader = async ({ params }) => {
-    let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
-
-    if (!jobs.length) {
-        const res = await fetch("/jobs.json");
-        if (!res.ok) throw new Error(`Failed to load jobs.json`);
-        const data = await res.json();
-        jobs = data.jobs;
-        localStorage.setItem("jobs", JSON.stringify(jobs));
+    if (!job) {
+        return (
+            <section className="text-center py-20">
+                <h2 className="text-3xl font-bold text-gray-700">Job Not Found</h2>
+                <Link to="/jobs" className="text-indigo-500 hover:text-indigo-600 mt-4 inline-block">
+                    <FaArrowLeft className="mr-2 inline" /> Back to Job Listings
+                </Link>
+            </section>
+        );
     }
 
-    const job = jobs.find((j) => j.id === params.id);
-    if (!job) throw new Response("Job not found", { status: 404 });
+    return (
+        <>
+            <section>
+                <div className="container m-auto py-6 px-6">
+                    <Link to="/jobs" className="text-indigo-500 hover:text-indigo-600 flex items-center">
+                        <FaArrowLeft className="mr-2" /> Back to Job Listings
+                    </Link>
+                </div>
+            </section>
 
-    return job;
+            <section className="bg-indigo-50">
+                <div className="container m-auto py-10 px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
+                        {/* Job Details */}
+                        <main>
+                            <div className="bg-white p-6 rounded-lg shadow-md text-center md:text-left">
+                                <div className="text-gray-500 mb-4">{job.type}</div>
+                                <h1 className="text-3xl font-bold mb-4">{job.title}</h1>
+                                <div className="text-gray-500 mb-4 flex align-middle justify-center md:justify-start">
+                                    <FaMapMarker className="text-orange-700 mr-1" />
+                                    <p className="text-orange-700"> {job.location}</p>
+                                </div>
+                            </div>
+
+                            <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                                <h3 className="text-indigo-800 text-lg font-bold mb-6">Job Description</h3>
+                                <p className="mb-4">{job.description}</p>
+
+                                <h3 className="text-indigo-800 text-lg font-bold mb-2">Salary</h3>
+                                <p className="mb-4"> {job.salary}</p>
+                            </div>
+                        </main>
+
+                        {/* Sidebar with Company Info */}
+                        <aside>
+                            <div className="bg-white p-6 rounded-lg shadow-md">
+                                <h3 className="text-xl font-bold mb-6">Company Info</h3>
+                                <h2 className="text-2xl">{job.company.name}</h2>
+                                <p className="my-2">{job.company.description}</p>
+
+                                <hr className="my-4" />
+
+                                <h3 className="text-xl">Contact Email:</h3>
+                                <p className="my-2 bg-indigo-100 p-2 font-bold">{job.company.contactEmail}</p>
+
+                                <h3 className="text-xl">Contact Phone:</h3>
+                                <p className="my-2 bg-indigo-100 p-2 font-bold"> {job.company.contactPhone}</p>
+                            </div>
+
+                            {/* Manage Job Actions */}
+                            <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                                <h3 className="text-xl font-bold mb-6">Manage Job</h3>
+                                <Link
+                                    to={`/edit-job/${job.id}`}
+                                    className="bg-indigo-500 hover:bg-indigo-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
+                                >
+                                    Edit Job
+                                </Link>
+                                <button
+                                    onClick={() => onDeleteClick(job.id)}
+                                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
+                                >
+                                    Delete Job
+                                </button>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+        </>
+    );
 };
 
 export default JobPage;
